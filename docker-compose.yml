@@ -1,0 +1,26 @@
+version: '2'
+services:
+  proxy:
+    build: ./
+    networks:
+      - legojs
+    restart: always
+    volumes:
+      - ./certbot/conf:/etc/nginx/ssl
+      - ./certbot/data:/var/www/certbot
+    ports:
+      - 80:80
+      - 443:443
+
+  certbot:
+    image: certbot/certbot:latest
+    command: certonly --webroot --webroot-path=/var/www/certbot --email your@email.com --agree-tos --no-eff-email -d insignias.malandriners.dev 
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/logs:/var/log/letsencrypt
+      - ./certbot/data:/var/www/certbot
+
+networks:
+  legojs:
+    external:
+      name: legojs_default
